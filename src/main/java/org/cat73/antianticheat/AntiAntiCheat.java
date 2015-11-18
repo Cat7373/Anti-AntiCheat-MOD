@@ -40,16 +40,16 @@ public class AntiAntiCheat {
     private Configuration config;
     private String selfMd5 = "b004abfb2a019a6563b51bfae6456a92";
 
-    public static AntiAntiCheat self;
+    private static AntiAntiCheat instance;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        self = this;
+        instance = this;
 
         channelmap = NetworkRegistry.INSTANCE.newChannel("LALAACM", new ChannelHandler[] { new AntiCheatHandle() });
 
         packetHandler.perInitialise();
-        this.config = new Configuration(new File(String.format("%s/%s.cfg", new Object[] { event.getModConfigurationDirectory(), "antiantiCheat" })));
+        this.config = new Configuration(new File(String.format("%s/%s.cfg", event.getModConfigurationDirectory(), "antiantiCheat")));
 
         FMLLog.info("preInit over");
     }
@@ -81,14 +81,14 @@ public class AntiAntiCheat {
         if (md5List != null) {
             FMLLog.info("client md5Lis :");
             for (String string : md5List) {
-                FMLLog.info("%s", new Object[] { string });
+                FMLLog.info("%s", string);
             }
         }
 
         return md5List;
     }
 
-    public HashMap<String, String> getMods() {
+    private HashMap<String, String> getMods() {
         HashMap<String, String> md5Map = new HashMap<String, String>();
         MD5Util md5Util = new MD5Util();
         try {
@@ -97,17 +97,17 @@ public class AntiAntiCheat {
             String path = minecraftClass.getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0];
             path = URLDecoder.decode(path, "UTF-8");
             path = path.substring(6);
-            FMLLog.info("ClassPath---%s", new Object[] { path });
+            FMLLog.info("ClassPath---%s", path);
             File jarFile = new File(path);
             String md5 = md5Util.getMd5(jarFile);
-            FMLLog.info("jar---%s:%s", new Object[] { jarFile.getName(), md5 });
+            FMLLog.info("jar---%s:%s", jarFile.getName(), md5);
             md5Map.put(jarFile.getName(), md5);
         } catch (ClassNotFoundException e) {
-            FMLLog.log(Level.ERROR, "%s:%s", new Object[] { "GameJarERROR", e });
+            FMLLog.log(Level.ERROR, "%s:%s", "GameJarERROR", e);
         } catch (NoSuchAlgorithmException e) {
-            FMLLog.log(Level.ERROR, "%s:%s", new Object[] { "GameJarERROR", e });
+            FMLLog.log(Level.ERROR, "%s:%s", "GameJarERROR", e);
         } catch (IOException e) {
-            FMLLog.log(Level.ERROR, "%s:%s", new Object[] { "GameJarERROR", e });
+            FMLLog.log(Level.ERROR, "%s:%s", "GameJarERROR", e);
         }
 
         List<ModContainer> mods = Loader.instance().getModList();
@@ -118,16 +118,20 @@ public class AntiAntiCheat {
                     continue;
                 }
                 String modMD5 = md5Util.getMd5(modFile);
-                FMLLog.info("modjar----%s:%s", new Object[] { mod.getName(), modMD5 });
+                FMLLog.info("modjar----%s:%s", mod.getName(), modMD5);
                 md5Map.put(mod.getName(), modMD5);
             } catch (NoSuchAlgorithmException e) {
-                FMLLog.log(Level.ERROR, "%s:%s", new Object[] { mod.getName(), e });
+                FMLLog.log(Level.ERROR, "%s:%s", mod.getName(), e);
                 continue;
             } catch (IOException e) {
-                FMLLog.log(Level.ERROR, "%s:%s", new Object[] { mod.getName(), e });
+                FMLLog.log(Level.ERROR, "%s:%s", mod.getName(), e);
                 md5Util.researchfile(modFile, false);
             }
         }
         return md5Map;
+    }
+    
+    public static AntiAntiCheat getInstance() {
+        return instance;
     }
 }

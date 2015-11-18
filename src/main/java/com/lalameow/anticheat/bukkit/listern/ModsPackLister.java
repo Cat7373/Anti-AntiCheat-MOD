@@ -32,7 +32,7 @@ public class ModsPackLister {
     @SubscribeEvent
     public void connectionSever(ClientCustomPacketEvent event) {
         String md5sString = "";
-        for (String md5 : AntiAntiCheat.self.md5List()) {
+        for (String md5 : AntiAntiCheat.getInstance().md5List()) {
             md5sString = md5sString + md5 + ",";
         }
         byte[] k = new byte[8];
