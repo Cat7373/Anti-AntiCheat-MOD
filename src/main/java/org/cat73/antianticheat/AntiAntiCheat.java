@@ -1,7 +1,5 @@
 package org.cat73.antianticheat;
 
-import io.netty.channel.ChannelHandler;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -13,10 +11,10 @@ import java.util.List;
 import org.apache.logging.log4j.Level;
 
 import com.lalameow.anticheat.bukkit.handle.AntiCheatHandle;
-import com.lalameow.anticheat.bukkit.listern.ModsPackLister;
 import com.lalameow.anticheat.network.PacketHandler;
 import com.lalameow.anticheat.util.MD5Util;
 
+import net.minecraft.util.StringUtils;
 import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
@@ -26,13 +24,13 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.FMLEmbeddedChannel;
-import cpw.mods.fml.common.network.FMLEventChannel;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = AntiAntiCheat.MODID, version = AntiAntiCheat.VERSION)
 public class AntiAntiCheat {
     public static final String MODID = "AntiCheat";
+    public static final String NAME = "Anti AntiCheat MOD";
     public static final String VERSION = "1.0";
 
     public static EnumMap<Side, FMLEmbeddedChannel> channelmap;
@@ -45,47 +43,55 @@ public class AntiAntiCheat {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         instance = this;
+        config = new Configuration(new File(String.format("%s/%s.cfg", event.getModConfigurationDirectory(), "AntiAntiCheat")));
 
-        channelmap = NetworkRegistry.INSTANCE.newChannel("LALAACM", new ChannelHandler[] { new AntiCheatHandle() });
-
+        channelmap = NetworkRegistry.INSTANCE.newChannel("LALAACM", new AntiCheatHandle());
         packetHandler.perInitialise();
-        this.config = new Configuration(new File(String.format("%s/%s.cfg", event.getModConfigurationDirectory(), "antiantiCheat")));
 
         FMLLog.info("preInit over");
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        FMLEventChannel networkEvent = NetworkRegistry.INSTANCE.newEventDrivenChannel("LALAACM");
-
-        networkEvent.register(new ModsPackLister());
         packetHandler.Initialise();
 
         FMLLog.info("Init over");
     }
 
-    public String[] md5List() {
+    public String getMD5String() {
         // 获取MOD的MD5列表
         HashMap<String, String> mods = getMods();
-        String[] md5List = mods.values().toArray(new String[mods.size() + 1]);
-        md5List[md5List.length - 1] = this.selfMd5;
-
-        // 读取配置
-        config.load();
-
-        // 保存配置
-        md5List = config.getStringList("MD5List", "ClientConfig", md5List, "MD5 list");
-        this.config.save();
-
-        // 输出MD5列表
-        if (md5List != null) {
-            FMLLog.info("client md5Lis :");
-            for (String string : md5List) {
-                FMLLog.info("%s", string);
+        String[] md5List = new String[mods.size()];
+        
+        // 将MD5列表整理成配置文件
+        int i = 0;
+        for(String name : mods.keySet()) {
+            String md5 = mods.get(name);
+            if(name.equalsIgnoreCase(NAME)) {
+                md5 = selfMd5;
             }
+            md5List[i++] = md5 + " ---> " + name;
         }
 
-        return md5List;
+        // 保存配置
+        config.load();
+        md5List = config.getStringList("MD5List", "ClientConfig", md5List, "MD5 list");
+        config.save();
+
+        // 将配置文件中的MD5列表处理成字符串
+        String md5s = "";
+        for (String md5 : md5List) {
+            String[] tmp = md5.split(" ---> ");
+            if(tmp.length >= 1) {
+                md5s = md5s + tmp[0] + ",";
+            }
+        }
+        if (!StringUtils.isNullOrEmpty(md5s)) {
+            md5s = md5s.substring(0, md5s.length() - 1);
+        }
+        
+        // 返回MD5字符串
+        return md5s;
     }
 
     private HashMap<String, String> getMods() {

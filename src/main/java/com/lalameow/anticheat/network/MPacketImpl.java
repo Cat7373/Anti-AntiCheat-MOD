@@ -5,7 +5,6 @@ import org.cat73.antianticheat.AntiAntiCheat;
 import cpw.mods.fml.common.network.FMLOutboundHandler;
 import cpw.mods.fml.relauncher.Side;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
 
 public class MPacketImpl implements MPacket {
     private String msg;
@@ -28,12 +27,5 @@ public class MPacketImpl implements MPacket {
         this.msg = msg;
         AntiAntiCheat.packetHandler.channels.get(Side.CLIENT).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TOSERVER);
         AntiAntiCheat.packetHandler.channels.get(Side.CLIENT).writeOutbound(this);
-    }
-  
-    public void sendServerMessage(String msg, EntityPlayer player) {
-        this.msg = msg;
-        AntiAntiCheat.packetHandler.channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.PLAYER);
-        AntiAntiCheat.packetHandler.channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(player);
-        AntiAntiCheat.packetHandler.channels.get(Side.SERVER).writeOutbound(this);
     }
 }
