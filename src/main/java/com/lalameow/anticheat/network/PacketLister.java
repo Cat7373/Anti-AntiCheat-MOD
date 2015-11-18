@@ -12,7 +12,7 @@ public class PacketLister {
   @SubscribeEvent
   public void clientCustomPacketEvent(ClientCustomPacketEvent e) {
     String packet = "";
-    for (String string : AntiAntiCheat.md5List) {
+    for (String string : AntiAntiCheat.self.md5List()) {
         packet = packet + string + ",";
     }
     if (!StringUtils.isNullOrEmpty(packet)) {

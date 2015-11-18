@@ -31,20 +31,23 @@ import cpw.mods.fml.common.network.FMLEmbeddedChannel;
 import cpw.mods.fml.common.network.FMLEventChannel;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @Mod(modid = AntiAntiCheat.MODID, version = AntiAntiCheat.VERSION)
 public class AntiAntiCheat {
     public static final String MODID = "AntiCheat";
     public static final String VERSION = "1.0";
-    public static List<String> md5List = new ArrayList<String>();
+    
     public static EnumMap<Side, FMLEmbeddedChannel> channelmap;
     public static final PacketHandler packetHandler = new PacketHandler();
     private Configuration config;
     private String selfMd5 = "b004abfb2a019a6563b51bfae6456a92";
     
+    public static AntiAntiCheat self;
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        self = this;
+        
         channelmap = NetworkRegistry.INSTANCE.newChannel("LALAACM", new ChannelHandler[] { new AntiCheatHandle() });
         
         packetHandler.perInitialise();
@@ -64,9 +67,7 @@ public class AntiAntiCheat {
         FMLLog.info("Init over");
     }
     
-    @Mod.EventHandler
-    @SideOnly(Side.CLIENT)
-    public void clientPostInit(FMLPostInitializationEvent event) {
+    public List<String> md5List() {
         // 读取配置
         config.load();
         
@@ -74,6 +75,7 @@ public class AntiAntiCheat {
         List<ModContainer> mods = Loader.instance().getModList();
         
         // 获取MOD的MD5列表
+        List<String> md5List = new ArrayList<String>();
         MD5Util md5Util = new MD5Util();
         for (ModContainer mod : mods) {
             try {
@@ -109,5 +111,7 @@ public class AntiAntiCheat {
                 FMLLog.info("%s", new Object[] { string });
             }
         }
+        
+        return md5List;
     }
 }
