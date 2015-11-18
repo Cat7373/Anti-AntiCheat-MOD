@@ -1,4 +1,4 @@
-package com.lalameow.anticheat.bukkit.pack;
+package org.cat73.antianticheat.bukkit.pack;
 
 import io.netty.buffer.ByteBuf;
 

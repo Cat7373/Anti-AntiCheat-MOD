@@ -1,4 +1,4 @@
-package com.lalameow.anticheat.network;
+package org.cat73.antianticheat.network;
 
 import io.netty.buffer.ByteBuf;
 

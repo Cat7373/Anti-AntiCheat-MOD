@@ -9,10 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
-
-import com.lalameow.anticheat.bukkit.handle.AntiCheatHandle;
-import com.lalameow.anticheat.network.PacketHandler;
-import com.lalameow.anticheat.util.MD5Util;
+import org.cat73.antianticheat.bukkit.handle.AntiCheatHandle;
+import org.cat73.antianticheat.network.PacketHandler;
+import org.cat73.antianticheat.util.MD5Util;
 
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.common.config.Configuration;

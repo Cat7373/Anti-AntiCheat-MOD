@@ -1,5 +1,5 @@
 # Anti-AntiCheat-MOD  
-破解国内某些MC服务器使用 AntiCheat 这个 MOD 来防止客户端修改 MOD 的限制  
+破解国内某些MC服务器使用 AntiCheat 这个 MOD 来防止客户端修改 MOD 的限制。  
 
 #使用要求:  
 1. 带Forge的MC客户端，且版本为1.7.x。  
@@ -14,5 +14,4 @@
 1. 如果没有找到 AntiCheat，请检查 version 中的 json ，应该藏在这里面，删掉即可。  
 2. 你可以随时修改 config/antiantiCheat.cfg 来更换发送给服务器的MD5列表，修改后即时生效，无需重启客户端。  
 
-#TODO：    
-1. 清理从AntiCheat中直接拿来用的代码。  
+#TODO：  

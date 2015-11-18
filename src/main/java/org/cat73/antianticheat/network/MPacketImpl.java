@@ -1,4 +1,4 @@
-package com.lalameow.anticheat.network;
+package org.cat73.antianticheat.network;
 
 import org.cat73.antianticheat.AntiAntiCheat;
 

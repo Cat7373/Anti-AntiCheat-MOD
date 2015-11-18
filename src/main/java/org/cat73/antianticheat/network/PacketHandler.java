@@ -1,4 +1,4 @@
-package com.lalameow.anticheat.network;
+package org.cat73.antianticheat.network;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.FMLEmbeddedChannel;

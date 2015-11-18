@@ -1,7 +1,8 @@
-package com.lalameow.anticheat.bukkit.handle;
+package org.cat73.antianticheat.bukkit.handle;
 
-import com.lalameow.anticheat.bukkit.pack.ModPackImpl;
-import com.lalameow.anticheat.bukkit.pack.ModsPack;
+import org.cat73.antianticheat.bukkit.pack.ModPackImpl;
+import org.cat73.antianticheat.bukkit.pack.ModsPack;
+
 import cpw.mods.fml.common.network.FMLIndexedMessageToMessageCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

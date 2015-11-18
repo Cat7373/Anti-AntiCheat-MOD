@@ -1,4 +1,4 @@
-package com.lalameow.anticheat.util;
+package org.cat73.antianticheat.util;
 
 import cpw.mods.fml.common.FMLLog;
 import java.io.File;
