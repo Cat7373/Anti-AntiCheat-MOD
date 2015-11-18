@@ -1,0 +1,2 @@
+# Anti-AntiCheat-MOD
+破击国内某些MC服务器使用AntiCheat这个MOD来防止客户端修改MOD的限制
