@@ -4,9 +4,11 @@ import io.netty.channel.ChannelHandler;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
@@ -25,7 +27,6 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.FMLEmbeddedChannel;
 import cpw.mods.fml.common.network.FMLEventChannel;
@@ -67,45 +68,21 @@ public class AntiAntiCheat {
         FMLLog.info("Init over");
     }
     
-    public List<String> md5List() {
+    public String[] md5List() {
+        // 获取MOD的MD5列表
+        HashMap<String, String> mods = getMods();
+        String[] md5List = mods.values().toArray(new String[mods.size() + 1]);
+        md5List[md5List.length - 1] = this.selfMd5;
+
         // 读取配置
         config.load();
-        
-        // 获取MOD列表
-        List<ModContainer> mods = Loader.instance().getModList();
-        
-        // 获取MOD的MD5列表
-        List<String> md5List = new ArrayList<String>();
-        MD5Util md5Util = new MD5Util();
-        for (ModContainer mod : mods) {
-            try {
-                if (!mod.getModId().equalsIgnoreCase(AntiAntiCheat.MODID)) {
-                    File modFile = mod.getSource();
-                    String modMD5 = md5Util.getMd5(modFile);
-                    FMLLog.log(Level.INFO, "%s modMd5:%s", new Object[] { mod.getName(), modMD5 });
-                    md5List.add(modMD5);
-                    break;
-                }
-            } catch (NoSuchAlgorithmException e) {
-                FMLLog.log(Level.ERROR, "%s:%s", new Object[] { mod.getName(), e });
-            } catch (IOException e) {
-                md5List.add(mod.getName());
-            }
-        }
-        md5List.add(this.selfMd5);
-        
-        // 如果配置里没有MD5列表则存入配置
-        String[] md5String = config.getStringList("MD5List", "ClientConfig", md5List.toArray(new String[md5List.size()]), "MD5 list");
+
+        // 保存配置
+        md5List = config.getStringList("MD5List", "ClientConfig", md5List, "MD5 list");
         this.config.save();
-        
-        // 重新读MD5列表
-        md5List.clear();
-        for (int i = 0; i < md5String.length; i++) {
-            md5List.add(md5String[i]);
-        }
-        
+
         // 输出MD5列表
-        if (md5String != null) {
+        if (md5List != null) {
             FMLLog.info("client md5Lis :");
             for (String string : md5List) {
                 FMLLog.info("%s", new Object[] { string });
@@ -113,5 +90,48 @@ public class AntiAntiCheat {
         }
         
         return md5List;
+    }
+    
+    public HashMap<String, String> getMods() {
+        HashMap<String, String> md5Map = new HashMap<String, String>();
+        MD5Util md5Util = new MD5Util();
+        try {
+            Class<?> minecraftClass = Class.forName("net.minecraft.client.main.Main");
+
+            String path = minecraftClass.getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0];
+            path = URLDecoder.decode(path, "UTF-8");
+            path = path.substring(6);
+            FMLLog.info("ClassPath---%s", new Object[] { path });
+            File jarFile = new File(path);
+            String md5 = md5Util.getMd5(jarFile);
+            FMLLog.info("jar---%s:%s", new Object[] { jarFile.getName(), md5 });
+            md5Map.put(jarFile.getName(), md5);
+        } catch (ClassNotFoundException e) {
+            FMLLog.log(Level.ERROR, "%s:%s", new Object[] { "GameJarERROR", e });
+        } catch (NoSuchAlgorithmException e) {
+            FMLLog.log(Level.ERROR, "%s:%s", new Object[] { "GameJarERROR", e });
+        } catch (IOException e) {
+            FMLLog.log(Level.ERROR, "%s:%s", new Object[] { "GameJarERROR", e });
+        }
+      
+        List<ModContainer> mods = Loader.instance().getModList();
+        for (ModContainer mod : mods) {
+            File modFile = mod.getSource();
+            try {
+                if ((mod.getName().equals("Forge Mod Loader")) || (mod.getName().equals("Minecraft Forge")) || (mod.getName().equals("Minecraft Coder Pack"))) {
+                    continue;
+                }
+                String modMD5 = md5Util.getMd5(modFile);
+                FMLLog.info("modjar----%s:%s", new Object[] { mod.getName(), modMD5 });
+                md5Map.put(mod.getName(), modMD5);
+            } catch (NoSuchAlgorithmException e) {
+                FMLLog.log(Level.ERROR, "%s:%s", new Object[] { mod.getName(), e });
+                continue;
+            } catch (IOException e) {
+                FMLLog.log(Level.ERROR, "%s:%s", new Object[] { mod.getName(), e });
+                md5Util.researchfile(modFile, false);
+            }
+        }
+        return md5Map;
     }
 }

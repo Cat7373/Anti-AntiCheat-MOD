@@ -13,9 +13,7 @@ import org.apache.logging.log4j.Level;
 
 
 public class MD5Util {
-  public String getMd5(File file)
-    throws IOException, NoSuchAlgorithmException
-  {
+  public String getMd5(File file) throws IOException, NoSuchAlgorithmException {
     FileInputStream inputStream = new FileInputStream(file.getAbsoluteFile());
     MappedByteBuffer byteBuffer = inputStream.getChannel().map(FileChannel.MapMode.READ_ONLY, 0L, file.length());
     
@@ -24,7 +22,8 @@ public class MD5Util {
     BigInteger bi = new BigInteger(1, md5.digest());
     String value = bi.toString(16);
     inputStream.close();
-    return value; }
+    return value;
+  }
   
   private boolean isSearch = false;
   
