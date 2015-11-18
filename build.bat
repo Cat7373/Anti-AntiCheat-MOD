@@ -1,1 +1,1 @@
-gradlew build -Dfile.encoding=UTF-8 > build.log
+cmd /k gradlew build -Dfile.encoding=UTF-8
