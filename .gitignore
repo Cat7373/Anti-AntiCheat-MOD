@@ -1,6 +1,7 @@
 /*
 !.gitignore
 !/src/
+!/src_999.999.999/
 !mcmod.info
 !README.md
 !LICENSE
