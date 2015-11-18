@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -16,10 +15,8 @@ import org.apache.logging.log4j.Level;
 import com.lalameow.anticheat.bukkit.handle.AntiCheatHandle;
 import com.lalameow.anticheat.bukkit.listern.ModsPackLister;
 import com.lalameow.anticheat.network.PacketHandler;
-import com.lalameow.anticheat.network.TextureCheck;
 import com.lalameow.anticheat.util.MD5Util;
 
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
@@ -53,7 +50,6 @@ public class AntiAntiCheat {
         
         packetHandler.perInitialise();
         this.config = new Configuration(new File(String.format("%s/%s.cfg", new Object[] { event.getModConfigurationDirectory(), "antiantiCheat" })));
-        MinecraftForge.EVENT_BUS.register(new TextureCheck());
         
         FMLLog.info("preInit over");
     }
