@@ -42,7 +42,7 @@ public class AntiAntiCheat {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         instance = this;
-        config = new Configuration(new File(String.format("%s/%s.cfg", event.getModConfigurationDirectory(), "AntiAntiCheat")));
+        this.config = new Configuration(new File(String.format("%s/%s.cfg", event.getModConfigurationDirectory(), "AntiAntiCheat")));
 
         channelmap = NetworkRegistry.INSTANCE.newChannel("LALAACM", new AntiCheatHandle());
         packetHandler.perInitialise();
@@ -67,15 +67,15 @@ public class AntiAntiCheat {
         for(String name : mods.keySet()) {
             String md5 = mods.get(name);
             if(name.equalsIgnoreCase(NAME)) {
-                md5 = selfMd5;
+                md5 = this.selfMd5;
             }
             md5List[i++] = md5 + " ---> " + name;
         }
 
         // 保存配置
-        config.load();
-        md5List = config.getStringList("MD5List", "ClientConfig", md5List, "MD5 list");
-        config.save();
+        this.config.load();
+        md5List = this.config.get("ClientConfig", "MD5List", md5List, "MD5 list").getStringList();
+        this.config.save();
 
         // 将配置文件中的MD5列表处理成字符串
         String md5s = "";
