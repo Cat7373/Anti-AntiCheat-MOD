@@ -11,32 +11,26 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.EnumMap;
 
 @ChannelHandler.Sharable
-public class PacketHandler
-  extends FMLIndexedMessageToMessageCodec<MPacket>
-{
-  public EnumMap<Side, FMLEmbeddedChannel> channels;
-  
-  public void encodeInto(ChannelHandlerContext ctx, MPacket msg, ByteBuf target)
-    throws Exception
-  {
-    msg.writeBytes(target);
-  }
-  
+public class PacketHandler extends FMLIndexedMessageToMessageCodec<MPacket> {
+    public EnumMap<Side, FMLEmbeddedChannel> channels;
 
-  public void decodeInto(ChannelHandlerContext ctx, ByteBuf source, MPacket msg)
-  {
-    msg.readBytes(source);
-  }
-  
+    public void encodeInto(ChannelHandlerContext ctx, MPacket msg, ByteBuf target) throws Exception {
+        msg.writeBytes(target);
+    }
 
-  public void perInitialise() {
-    this.channels = NetworkRegistry.INSTANCE.newChannel("AntiCheatListerC", new ChannelHandler[] { this });
-  }
-  
-  public void Initialise() {
-    FMLCommonHandler.instance().bus().register(new PacketLister());
-    NetworkRegistry.INSTANCE.newEventDrivenChannel("AntiCheatListerC").register(new PacketLister());
-  }
-  
-  public void sendMessage(MPacket mpack) {}
+    public void decodeInto(ChannelHandlerContext ctx, ByteBuf source, MPacket msg) {
+        msg.readBytes(source);
+    }
+
+    public void perInitialise() {
+        this.channels = NetworkRegistry.INSTANCE.newChannel("AntiCheatListerC", this);
+    }
+
+    public void Initialise() {
+        PacketLister lister = new PacketLister();
+        FMLCommonHandler.instance().bus().register(lister);
+        NetworkRegistry.INSTANCE.newEventDrivenChannel("AntiCheatListerC").register(lister);
+    }
+
+    public void sendMessage(MPacket mpack) {}
 }

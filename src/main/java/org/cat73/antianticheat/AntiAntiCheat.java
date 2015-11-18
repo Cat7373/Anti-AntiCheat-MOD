@@ -34,36 +34,36 @@ import cpw.mods.fml.relauncher.Side;
 public class AntiAntiCheat {
     public static final String MODID = "AntiCheat";
     public static final String VERSION = "1.0";
-    
+
     public static EnumMap<Side, FMLEmbeddedChannel> channelmap;
     public static final PacketHandler packetHandler = new PacketHandler();
     private Configuration config;
     private String selfMd5 = "b004abfb2a019a6563b51bfae6456a92";
-    
+
     public static AntiAntiCheat self;
-    
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         self = this;
-        
+
         channelmap = NetworkRegistry.INSTANCE.newChannel("LALAACM", new ChannelHandler[] { new AntiCheatHandle() });
-        
+
         packetHandler.perInitialise();
         this.config = new Configuration(new File(String.format("%s/%s.cfg", new Object[] { event.getModConfigurationDirectory(), "antiantiCheat" })));
-        
+
         FMLLog.info("preInit over");
     }
-    
+
     @EventHandler
     public void init(FMLInitializationEvent event) {
         FMLEventChannel networkEvent = NetworkRegistry.INSTANCE.newEventDrivenChannel("LALAACM");
-        
+
         networkEvent.register(new ModsPackLister());
         packetHandler.Initialise();
-        
+
         FMLLog.info("Init over");
     }
-    
+
     public String[] md5List() {
         // 获取MOD的MD5列表
         HashMap<String, String> mods = getMods();
@@ -84,10 +84,10 @@ public class AntiAntiCheat {
                 FMLLog.info("%s", new Object[] { string });
             }
         }
-        
+
         return md5List;
     }
-    
+
     public HashMap<String, String> getMods() {
         HashMap<String, String> md5Map = new HashMap<String, String>();
         MD5Util md5Util = new MD5Util();
@@ -109,7 +109,7 @@ public class AntiAntiCheat {
         } catch (IOException e) {
             FMLLog.log(Level.ERROR, "%s:%s", new Object[] { "GameJarERROR", e });
         }
-      
+
         List<ModContainer> mods = Loader.instance().getModList();
         for (ModContainer mod : mods) {
             File modFile = mod.getSource();
